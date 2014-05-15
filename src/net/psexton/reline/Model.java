@@ -38,12 +38,6 @@ import javax.swing.Timer;
  * @author PSexton
  */
 public class Model {
-    private static final int JOIN_REGION_WIDTH = 142;
-    private static final int RESTART_REGION_WIDTH = 254;
-    private static final int REGION_HEIGHT = 3;
-    private static final int WHITE = new Color(255, 255, 255).getRGB();
-    private static final int GREEN = new Color(69, 173, 58).getRGB();
-    
     private JTextArea console;
     private boolean isRunning;
     private Timer timer;
@@ -96,21 +90,14 @@ public class Model {
         appendLine("Checking...");
         BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         appendLine("\tGot screenshot");
-        Point joinClickPoint = findGreenSubregion(screenShot, JOIN_REGION_WIDTH, REGION_HEIGHT);
+        PatchFinder pf = new PatchFinder();
+        Point joinClickPoint = pf.findInImage(screenShot);
         if(joinClickPoint != null) {
             appendLine("\tFound join button");
             robot.mouseMove(joinClickPoint.x, joinClickPoint.y);
         }
         else {
             appendLine("\tDid not find join button");
-            Point restartClickPoint = findGreenSubregion(screenShot, RESTART_REGION_WIDTH, REGION_HEIGHT);
-            if(restartClickPoint != null) {
-                appendLine("\tFound restart button");
-                robot.mouseMove(restartClickPoint.x, restartClickPoint.y);
-            }
-            else {
-                appendLine("\tDid not find restart button");
-            }
         }
     }
     
@@ -126,57 +113,4 @@ public class Model {
         console.append(dateAndTimePrefix + content + "\n");
     }
     
-    /**
-     * 
-     * @param large The larger image to look in
-     * @return Point with top left coordinates, or null
-     */
-    private Point findGreenSubregion(BufferedImage image, int regionWidth, int regionHeight) {
-        /*
-         * Rather than actually search for the images, we vastly simplify:
-         * For each button we look for a Nx3 region.
-         * The first row will be all white pixels.
-         * The second and third rows will be white pixels at the ends, and green
-         * pixels in all interior locations.
-         * 
-         * We will search until we find a matching subregion, or run out of screen.
-         * If we do find a match, return the location in the original image of the
-         * top left green pixel (second row, second column in the subregion).
-         */
-        
-        // Iterating over all possible start points
-        int minStartX = image.getMinX();
-        int minStartY = image.getMinY();
-        int maxStartX = image.getWidth() - regionWidth - 1;
-        int maxStartY = image.getHeight() - regionHeight - 1;
-        for(int y = minStartY; y <= maxStartY; y++) {
-            for(int x = minStartX; x <= maxStartX; x++) {
-                BufferedImage subImage = image.getSubimage(x, y, regionWidth, regionHeight);
-                if(isMatchingSubRegion(subImage))
-                    return new Point(x, y);
-            }
-        }
-        
-        return null;
-    }
-    
-    private boolean isMatchingSubRegion(BufferedImage image) {
-        // First row should be all white
-        final int maxX = image.getWidth() - 1;
-        for(int x = 0; x <= maxX; x++) {
-            if(image.getRGB(x, 0) != WHITE)
-                return false;
-        }
-        // Second and third rows should be white on edges, and green in interior
-        for(int y = 1; y <= 2; y++) {
-            if(image.getRGB(0, y) != WHITE || image.getRGB(maxX, y) != WHITE)
-                return false;
-            for(int x = 1; x < maxX; x++) {
-                if(image.getRGB(x, y) != GREEN)
-                    return false;
-            }
-        }
-        
-        return true;
-    }
 }
