@@ -139,4 +139,36 @@ public class PatchFinderTest {
         assertNotNull(result);
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On vline_join_cropped.png, should return (46, 32) for top left corner of button
+     * Note that we change the patch size to 16x16
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
+     */
+    @Test
+    public void greenPatchFoundInCroppedJoin() throws IOException {
+        BufferedImage boxes = ImageIO.read(new File(imageDir, "vline_join_cropped.png"));
+        PatchFinder instance = new PatchFinder();
+        instance.setPatchSize(16);
+        Point expResult = new Point(46, 32);
+        Point result = instance.findInImage(boxes);
+        assertEquals(expResult, result);
+    }
+ 
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On vline_restart_cropped.png, should return (71, 85) for top left corner of button
+     * Note that we change the patch size to 32x32
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
+     */
+    @Test
+    public void greenPatchFoundInCroppedRestart() throws IOException {
+        BufferedImage boxes = ImageIO.read(new File(imageDir, "vline_restart_cropped.png"));
+        PatchFinder instance = new PatchFinder();
+        instance.setPatchSize(32);
+        Point expResult = new Point(71, 85);
+        Point result = instance.findInImage(boxes);
+        assertEquals(expResult, result);
+    }
 }
