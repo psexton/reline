@@ -106,24 +106,24 @@ public class Model {
 //        }
         appendLine("\tGot screenshot");
         
-        appendLine("\tLooking for join button...");
-        Point joinClickPoint = lookForJoinButton(screenshot);
-        if(joinClickPoint != null) {
-            appendLine("\t\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
-            moveAndClickMouse(joinClickPoint);
+        appendLine("\tLooking for restart button...");
+        Point restartClickPoint = lookForRestartButton(screenshot);
+        if(restartClickPoint != null) {
+            appendLine("\t\tFound restart button at (" + restartClickPoint.x + ", " + restartClickPoint.y + ")");
+            moveAndClickMouse(restartClickPoint);
             appendLine("\t\tCursor moved and clicked");
         }
         else {
-            appendLine("\t\tDid not find join button");
-            appendLine("\tLooking for restart button...");
-            Point restartClickPoint = lookForRestartButton(screenshot);
-            if(restartClickPoint != null) {
-                appendLine("\t\tFound restart button at (" + restartClickPoint.x + ", " + restartClickPoint.y + ")");
-                moveAndClickMouse(restartClickPoint);
+            appendLine("\t\tDid not find restart button");
+            appendLine("\tLooking for join button...");
+            Point joinClickPoint = lookForJoinButton(screenshot);
+            if(joinClickPoint != null) {
+                appendLine("\t\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
+                moveAndClickMouse(joinClickPoint);
                 appendLine("\t\tCursor moved and clicked");
             }
             else {
-                appendLine("\t\tDid not find restart button");
+                appendLine("\t\tDid not find join button");
             }
         }
         counter++;
