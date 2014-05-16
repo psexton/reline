@@ -33,32 +33,21 @@ import static org.junit.Assert.*;
  * @author PSexton
  */
 public class PatchFinderTest {
-    private static BufferedImage allBlack;
-    private static BufferedImage allWhite;
-    private static BufferedImage allGreen;
-    private static BufferedImage boxes;
-    private static BufferedImage tinyGreenBox;
-    private static BufferedImage screenshotAllGreen;
-    private static BufferedImage screenshotBoxes;
+    private static File imageDir;
     
     @BeforeClass
-    public static void setUpClass() throws IOException {
-        File imageDir = new File(System.getProperty("user.dir"), "images");
-        allBlack = ImageIO.read(new File(imageDir, "all_black.png"));
-        allWhite = ImageIO.read(new File(imageDir, "all_white.png"));
-        allGreen = ImageIO.read(new File(imageDir, "all_green.png"));
-        boxes = ImageIO.read(new File(imageDir, "boxes.png"));
-        tinyGreenBox = ImageIO.read(new File(imageDir, "tiny_green_box.png"));
-        screenshotAllGreen = ImageIO.read(new File(imageDir, "screenshot_wpv_all_green.png"));
-        screenshotBoxes = ImageIO.read(new File(imageDir, "screenshot_wpv_boxes.png"));
+    public static void setUpClass() {
+        imageDir = new File(System.getProperty("user.dir"), "images");
     }
 
     /**
      * Test of findInImage method, of class PatchFinder.
      * On allBlack, should return null
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchNotFoundInAllBlack() {
+    public void greenPatchNotFoundInAllBlack() throws IOException {
+        BufferedImage allBlack = ImageIO.read(new File(imageDir, "all_black.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = null;
         Point result = instance.findInImage(allBlack);
@@ -68,9 +57,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On allWhite, should return null
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchNotFoundInAllWhite() {
+    public void greenPatchNotFoundInAllWhite() throws IOException {
+        BufferedImage allWhite = ImageIO.read(new File(imageDir, "all_white.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = null;
         Point result = instance.findInImage(allWhite);
@@ -80,9 +71,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On allGreen, should return (0,0)
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInAllGreen() {
+    public void greenPatchFoundInAllGreen() throws IOException {
+        BufferedImage allGreen = ImageIO.read(new File(imageDir, "all_green.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(0, 0);
         Point result = instance.findInImage(allGreen);
@@ -92,9 +85,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On tinyGreenBox, should return null because patch is too small
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchNotFoundInTinyGreenBox() {
+    public void greenPatchNotFoundInTinyGreenBox() throws IOException {
+        BufferedImage tinyGreenBox = ImageIO.read(new File(imageDir, "tiny_green_box.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = null;
         Point result = instance.findInImage(tinyGreenBox);
@@ -104,9 +99,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On boxes, should return (300, 100) for top right box
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInBoxes() {
+    public void greenPatchFoundInBoxes() throws IOException {
+        BufferedImage boxes = ImageIO.read(new File(imageDir, "boxes.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(300, 100);
         Point result = instance.findInImage(boxes);
@@ -116,9 +113,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On screenshot of all_green.png, should return (104, 214) for box in window
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInScreenshotOfAllGreen() {
+    public void greenPatchFoundInScreenshotOfAllGreen() throws IOException {
+        BufferedImage screenshotAllGreen = ImageIO.read(new File(imageDir, "screenshot_wpv_all_green.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(104, 214);
         Point result = instance.findInImage(screenshotAllGreen);
@@ -129,9 +128,11 @@ public class PatchFinderTest {
     /**
      * Test of findInImage method, of class PatchFinder.
      * On screenshot of boxes.png, should return (382, 203) for top right box in window
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInScreenshotOfBoxes() {
+    public void greenPatchFoundInScreenshotOfBoxes() throws IOException {
+        BufferedImage screenshotBoxes = ImageIO.read(new File(imageDir, "screenshot_wpv_boxes.png"));
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(382, 203);
         Point result = instance.findInImage(screenshotBoxes);
