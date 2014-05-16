@@ -46,6 +46,7 @@ public class Model {
     private Timer timer;
     private final DateFormat dateFormat;
     private Robot robot;
+    private int counter;
     
     public Model() {
         console = null;
@@ -53,6 +54,7 @@ public class Model {
         timer = null;
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
         robot = null;
+        counter = 0;
     }
     
     public void startMonitor(int intervalInSeconds, JTextArea console) {
@@ -112,6 +114,7 @@ public class Model {
                 appendLine("\t\tDid not find restart button");
             }
         }
+        counter++;
     }
     
     private Point lookForJoinButton(BufferedImage screenshot) {
