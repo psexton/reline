@@ -26,6 +26,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -37,6 +38,9 @@ import javax.swing.Timer;
  * @author PSexton
  */
 public class Model {
+    private static final int JOIN_PATCH_SIZE = 16;
+    private static final int RESTART_PATCH_SIZE = 32;
+    
     private JTextArea console;
     private boolean isRunning;
     private Timer timer;
@@ -87,14 +91,33 @@ public class Model {
         appendLine("Checking...");
         BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         appendLine("\tGot screenshot");
+        
+        // To save time, divide the screen image into a 4x4 grid, with square
+        // (0,0) in the top left, and square (3,0) in the top right.
+        // Only look for join button in squares (2,1) and (2,2).
+        final int gridSquareWidth = screenShot.getWidth() / 4;
+        final int gridSquareHeight = screenShot.getHeight() / 4;
+        final int croppedStartX = gridSquareWidth * 2;
+        final int croppedStartY = gridSquareHeight * 1;
+        final int croppedWidth = gridSquareWidth * 1;
+        final int croppedHeight = gridSquareHeight * 2;
+        BufferedImage croppedScreen = screenShot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
+        
         PatchFinder pf = new PatchFinder();
-        Point clickPoint = pf.findInImage(screenShot);
-        if(clickPoint != null) {
-            appendLine("\tFound button at (" + clickPoint.x + ", " + clickPoint.y + ")");
-            robot.mouseMove(clickPoint.x, clickPoint.y);
+        pf.setPatchSize(JOIN_PATCH_SIZE);
+        Point joinClickPoint = pf.findInImage(croppedScreen);
+        if(joinClickPoint != null) {
+            // Need to convert croppedScreen's coords to screen's coords
+            joinClickPoint.x = joinClickPoint.x + croppedStartX;
+            joinClickPoint.y = joinClickPoint.y + croppedStartY;
+            appendLine("\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
+            robot.mouseMove(joinClickPoint.x, joinClickPoint.y);
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            appendLine("\tCursor moved and clicked");
         }
         else {
-            appendLine("\tDid not find button");
+            appendLine("\tDid not find join button");
         }
     }
     
