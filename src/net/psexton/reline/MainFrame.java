@@ -49,7 +49,7 @@ public class MainFrame extends javax.swing.JFrame {
         console = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Reline");
+        setTitle("Reline 0.2.0");
 
         intervalLabel.setText("Interval (seconds):");
 
