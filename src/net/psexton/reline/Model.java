@@ -104,7 +104,7 @@ public class Model {
             appendLine("\tLooking for restart button...");
             Point restartClickPoint = lookForRestartButton(screenshot);
             if(restartClickPoint != null) {
-                appendLine("\t\tFound restart button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
+                appendLine("\t\tFound restart button at (" + restartClickPoint.x + ", " + restartClickPoint.y + ")");
                 moveAndClickMouse(restartClickPoint);
                 appendLine("\t\tCursor moved and clicked");
             }
