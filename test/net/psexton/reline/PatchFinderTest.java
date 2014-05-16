@@ -70,14 +70,30 @@ public class PatchFinderTest {
     
     /**
      * Test of findInImage method, of class PatchFinder.
-     * On allGreen, should return (0,0)
+     * On allGreen, should return (0,0), with left margin checking disabled
      * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInAllGreen() throws IOException {
+    public void greenPatchWithoutMarginFoundInAllGreen() throws IOException {
         BufferedImage allGreen = ImageIO.read(new File(imageDir, "all_green.png"));
         PatchFinder instance = new PatchFinder();
+        instance.setLeftMarginEnabled(false);
         Point expResult = new Point(0, 0);
+        Point result = instance.findInImage(allGreen);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On allGreen, should return null because there's no white margin at the left
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
+     */
+    @Test
+    public void greenPatchWithMarginNotFoundInAllGreen() throws IOException {
+        BufferedImage allGreen = ImageIO.read(new File(imageDir, "all_green.png"));
+        PatchFinder instance = new PatchFinder();
+        instance.setLeftMarginEnabled(true);
+        Point expResult = null;
         Point result = instance.findInImage(allGreen);
         assertEquals(expResult, result);
     }
@@ -112,16 +128,33 @@ public class PatchFinderTest {
     
     /**
      * Test of findInImage method, of class PatchFinder.
-     * On screenshot of all_green.png, should return (104, 214) for box in window
+     * On screenshot of all_green.png, should return null when left margin 
+     * checking is enabled
      * @throws java.io.IOException If ImageIO.read throws it while reading in png
      */
     @Test
-    public void greenPatchFoundInScreenshotOfAllGreen() throws IOException {
+    public void greenPatchWithMarginNotFoundInScreenshotOfAllGreen() throws IOException {
         BufferedImage screenshotAllGreen = ImageIO.read(new File(imageDir, "screenshot_wpv_all_green.png"));
         PatchFinder instance = new PatchFinder();
+        instance.setLeftMarginEnabled(true);
+        Point expResult = null;
+        Point result = instance.findInImage(screenshotAllGreen);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On screenshot of all_green.png, should return (104, 214) for box in window,
+     * when left margin checking is disabled.
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
+     */
+    @Test
+    public void greenPatchWithoutMarginFoundInScreenshotOfAllGreen() throws IOException {
+        BufferedImage screenshotAllGreen = ImageIO.read(new File(imageDir, "screenshot_wpv_all_green.png"));
+        PatchFinder instance = new PatchFinder();
+        instance.setLeftMarginEnabled(false);
         Point expResult = new Point(104, 214);
         Point result = instance.findInImage(screenshotAllGreen);
-        assertNotNull(result);
         assertEquals(expResult, result);
     }
     
@@ -136,7 +169,6 @@ public class PatchFinderTest {
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(382, 203);
         Point result = instance.findInImage(screenshotBoxes);
-        assertNotNull(result);
         assertEquals(expResult, result);
     }
 
@@ -171,4 +203,21 @@ public class PatchFinderTest {
         Point result = instance.findInImage(boxes);
         assertEquals(expResult, result);
     }
+    
+
+    
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On allGreenWithMargins, should return (1, 1)
+     * @throws java.io.IOException If ImageIO.read throws it while reading in png
+     */
+    @Test
+    public void greenPatchFoundInAllGreenWithMargins() throws IOException {
+        BufferedImage boxes = ImageIO.read(new File(imageDir, "all_green_with_margins.png"));
+        PatchFinder instance = new PatchFinder();
+        Point expResult = new Point(1, 1);
+        Point result = instance.findInImage(boxes);
+        assertEquals(expResult, result);
+    }
+    
 }

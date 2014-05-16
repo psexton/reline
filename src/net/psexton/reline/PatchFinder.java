@@ -31,10 +31,14 @@ import java.awt.image.BufferedImage;
  */
 public class PatchFinder {
     private static final Color DEFAULT_PATCH_COLOR = new Color(69, 173, 58);
+    private static final Color DEFAULT_MARGIN_COLOR = new Color(255, 255, 255);
     private static final int DEFAULT_PATCH_SIZE = 25;
+    private static final boolean DEFAULT_USE_LEFT_MARGIN = true;
     
     private Color patchColor = DEFAULT_PATCH_COLOR;
+    private Color marginColor = DEFAULT_MARGIN_COLOR;
     private int patchSize = DEFAULT_PATCH_SIZE;
+    private boolean useLeftMargin = DEFAULT_USE_LEFT_MARGIN;
 
     /**
      * Get the value of patchColor
@@ -55,6 +59,24 @@ public class PatchFinder {
     }
     
     /**
+     * Get the value of marginColor
+     *
+     * @return the value of marginColor
+     */
+    public Color getMarginColor() {
+        return marginColor;
+    }
+
+    /**
+     * Set the value of marginColor
+     *
+     * @param marginColor new value of marginColor
+     */
+    public void setMarginColor(Color marginColor) {
+        this.marginColor = marginColor;
+    }
+    
+    /**
      * Get the value of patchSize
      *
      * @return the value of patchSize
@@ -70,6 +92,14 @@ public class PatchFinder {
      */
     public void setPatchSize(int patchSize) {
         this.patchSize = patchSize;
+    }
+    
+    public boolean isLeftMarginEnabled() {
+        return useLeftMargin;
+    }
+    
+    public void setLeftMarginEnabled(boolean useLeftMargin) {
+        this.useLeftMargin = useLeftMargin;
     }
 
     /**
@@ -94,8 +124,19 @@ public class PatchFinder {
             for(int y = minStartY; y <= maxStartY; y++) {
                 // Check each one of them
                 BufferedImage subImage = image.getSubimage(x, y, getPatchSize(), getPatchSize());
-                if(isAPatch(subImage))
+                if(isAPatch(subImage)) {
+                    // If left margin is enabled, we need to check that and return null
+                    // if we found a patch, but it doesn't have the margin.
+                    if(isLeftMarginEnabled()) {
+                        // special case of no left margin because we're at the left edge
+                        if(x == 0)
+                            return null;
+                        BufferedImage marginImage = image.getSubimage(x-1, y, 1, getPatchSize());
+                        if(!isAMargin(marginImage))
+                            return null;
+                    }
                     return new Point(x, y);
+                }
             }
         }
         
@@ -125,7 +166,22 @@ public class PatchFinder {
                 return false;
         }
         
+        // If left margin is being used, check that before returning true
+        if(isLeftMarginEnabled()) {
+            
+        }
+        
         return true;
     }
     
+    private boolean isAMargin(BufferedImage image) {
+        // Entire image should have the same RGB value as the margin
+        // Don't do any color depth reduction
+        int[] imageColors = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+        for(int i = 0; i < imageColors.length; i++) {
+            if(imageColors[i] != getMarginColor().getRGB())
+                return false;
+        }
+        return true;
+    }
 }
