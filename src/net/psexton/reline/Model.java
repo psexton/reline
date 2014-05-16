@@ -89,38 +89,80 @@ public class Model {
     
     private void monitor() {
         appendLine("Checking...");
-        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         appendLine("\tGot screenshot");
         
+        appendLine("\tLooking for join button...");
+        Point joinClickPoint = lookForJoinButton(screenshot);
+        if(joinClickPoint != null) {
+            appendLine("\t\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
+            moveAndClickMouse(joinClickPoint);
+            appendLine("\t\tCursor moved and clicked");
+        }
+        else {
+            appendLine("\t\tDid not find join button");
+            appendLine("\tLooking for restart button...");
+            Point restartClickPoint = lookForRestartButton(screenshot);
+            if(restartClickPoint != null) {
+                appendLine("\t\tFound restart button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
+                moveAndClickMouse(restartClickPoint);
+                appendLine("\t\tCursor moved and clicked");
+            }
+            else {
+                appendLine("\t\tDid not find restart button");
+            }
+        }
+    }
+    
+    private Point lookForJoinButton(BufferedImage screenshot) {
         // To save time, divide the screen image into a 4x4 grid, with square
         // (0,0) in the top left, and square (3,0) in the top right.
         // Only look for join button in squares (2,1) and (2,2).
-        final int gridSquareWidth = screenShot.getWidth() / 4;
-        final int gridSquareHeight = screenShot.getHeight() / 4;
+        final int gridSquareWidth = screenshot.getWidth() / 4;
+        final int gridSquareHeight = screenshot.getHeight() / 4;
         final int croppedStartX = gridSquareWidth * 2;
         final int croppedStartY = gridSquareHeight * 1;
         final int croppedWidth = gridSquareWidth * 1;
         final int croppedHeight = gridSquareHeight * 2;
-        BufferedImage croppedScreen = screenShot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
-        
+        BufferedImage croppedScreen = screenshot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
         PatchFinder pf = new PatchFinder();
         pf.setPatchSize(JOIN_PATCH_SIZE);
-        Point joinClickPoint = pf.findInImage(croppedScreen);
-        if(joinClickPoint != null) {
+        Point clickPoint = pf.findInImage(croppedScreen);
+        if(clickPoint != null) {
             // Need to convert croppedScreen's coords to screen's coords
-            joinClickPoint.x = joinClickPoint.x + croppedStartX;
-            joinClickPoint.y = joinClickPoint.y + croppedStartY;
-            appendLine("\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
-            robot.mouseMove(joinClickPoint.x, joinClickPoint.y);
-            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-            appendLine("\tCursor moved and clicked");
+            clickPoint.x = clickPoint.x + croppedStartX;
+            clickPoint.y = clickPoint.y + croppedStartY;
         }
-        else {
-            appendLine("\tDid not find join button");
-        }
+        return clickPoint;
     }
     
+    private Point lookForRestartButton(BufferedImage screenshot) {
+        // To save time, divide the screen image into a 4x4 grid, with square
+        // (0,0) in the top left, and square (3,0) in the top right.
+        // Only look for restart button in squares (1,0) and (2,0).
+        final int gridSquareWidth = screenshot.getWidth() / 4;
+        final int gridSquareHeight = screenshot.getHeight() / 4;
+        final int croppedStartX = gridSquareWidth * 1;
+        final int croppedStartY = gridSquareHeight * 0;
+        final int croppedWidth = gridSquareWidth * 2;
+        final int croppedHeight = gridSquareHeight * 1;
+        BufferedImage croppedScreen = screenshot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
+        PatchFinder pf = new PatchFinder();
+        pf.setPatchSize(RESTART_PATCH_SIZE);
+        Point clickPoint = pf.findInImage(croppedScreen);
+        if(clickPoint != null) {
+            // Need to convert croppedScreen's coords to screen's coords
+            clickPoint.x = clickPoint.x + croppedStartX;
+            clickPoint.y = clickPoint.y + croppedStartY;
+        }
+        return clickPoint;
+    }
+    
+    private void moveAndClickMouse(Point point) {
+        robot.mouseMove(point.x, point.y);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
     /**
      * Will be prefixed with date & time info, and suffixed with newline.
      * @param contents 
