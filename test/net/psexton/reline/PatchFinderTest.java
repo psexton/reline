@@ -38,6 +38,8 @@ public class PatchFinderTest {
     private static BufferedImage allGreen;
     private static BufferedImage boxes;
     private static BufferedImage tinyGreenBox;
+    private static BufferedImage screenshotAllGreen;
+    private static BufferedImage screenshotBoxes;
     
     @BeforeClass
     public static void setUpClass() throws IOException {
@@ -47,6 +49,8 @@ public class PatchFinderTest {
         allGreen = ImageIO.read(new File(imageDir, "all_green.png"));
         boxes = ImageIO.read(new File(imageDir, "boxes.png"));
         tinyGreenBox = ImageIO.read(new File(imageDir, "tiny_green_box.png"));
+        screenshotAllGreen = ImageIO.read(new File(imageDir, "screenshot_wpv_all_green.png"));
+        screenshotBoxes = ImageIO.read(new File(imageDir, "screenshot_wpv_boxes.png"));
     }
 
     /**
@@ -106,6 +110,32 @@ public class PatchFinderTest {
         PatchFinder instance = new PatchFinder();
         Point expResult = new Point(300, 100);
         Point result = instance.findInImage(boxes);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On screenshot of all_green.png, should return (104, 214) for box in window
+     */
+    @Test
+    public void greenPatchFoundInScreenshotOfAllGreen() {
+        PatchFinder instance = new PatchFinder();
+        Point expResult = new Point(104, 214);
+        Point result = instance.findInImage(screenshotAllGreen);
+        assertNotNull(result);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of findInImage method, of class PatchFinder.
+     * On screenshot of boxes.png, should return (382, 203) for top right box in window
+     */
+    @Test
+    public void greenPatchFoundInScreenshotOfBoxes() {
+        PatchFinder instance = new PatchFinder();
+        Point expResult = new Point(382, 203);
+        Point result = instance.findInImage(screenshotBoxes);
+        assertNotNull(result);
         assertEquals(expResult, result);
     }
 }

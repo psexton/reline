@@ -20,7 +20,6 @@
 package net.psexton.reline;
 
 import java.awt.AWTException;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -68,8 +67,6 @@ public class Model {
         });
         try {
             robot = new Robot();
-            timer.setInitialDelay(0); // trigger immediately upon starting
-            //timer.setRepeats(false);
             timer.start();
         } 
         catch (AWTException ex) {
@@ -91,13 +88,13 @@ public class Model {
         BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         appendLine("\tGot screenshot");
         PatchFinder pf = new PatchFinder();
-        Point joinClickPoint = pf.findInImage(screenShot);
-        if(joinClickPoint != null) {
-            appendLine("\tFound join button");
-            robot.mouseMove(joinClickPoint.x, joinClickPoint.y);
+        Point clickPoint = pf.findInImage(screenShot);
+        if(clickPoint != null) {
+            appendLine("\tFound button at (" + clickPoint.x + ", " + clickPoint.y + ")");
+            robot.mouseMove(clickPoint.x, clickPoint.y);
         }
         else {
-            appendLine("\tDid not find join button");
+            appendLine("\tDid not find button");
         }
     }
     

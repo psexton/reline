@@ -104,12 +104,24 @@ public class PatchFinder {
     }
     
     private boolean isAPatch(BufferedImage image) {
+        int DEPTH_REDUCTION = 7;
+        // Break out the red, green, and blue values for patch
+        int patchRed = getPatchColor().getRed() >> DEPTH_REDUCTION;
+        int patchGreen = getPatchColor().getGreen() >> DEPTH_REDUCTION;
+        int patchBlue = getPatchColor().getBlue() >> DEPTH_REDUCTION;
+        
         // Entire image should have the same RGB value as the patch
         int[] imageColors = image.getRGB(0, 0, getPatchSize(), getPatchSize(), null, 0, getPatchSize());
         for(int i = 0; i < imageColors.length; i++) {
             // Need to convert from ARGB color space to RGB color space
             Color pixelColor = new Color(imageColors[i], true);
-            if(!pixelColor.equals(getPatchColor()))
+            
+            // Break out the red, green, and blue values from pixelColor
+            int pixelRed = pixelColor.getRed() >> DEPTH_REDUCTION;
+            int pixelGreen = pixelColor.getGreen() >> DEPTH_REDUCTION;
+            int pixelBlue = pixelColor.getBlue() >> DEPTH_REDUCTION;
+            
+            if(pixelRed != patchRed || pixelGreen != patchGreen || pixelBlue != patchBlue)
                 return false;
         }
         
