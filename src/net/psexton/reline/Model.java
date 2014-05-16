@@ -51,7 +51,7 @@ public class Model {
     private Timer timer;
     private final DateFormat dateFormat;
     private Robot robot;
-    private int counter;
+    private long counter;
     
     public Model() {
         console = null;
@@ -95,7 +95,8 @@ public class Model {
     }
     
     private void monitor() {
-        appendLine("Checking...");
+        appendLine("Checking... (#" + counter + ")");
+        long startTime = System.currentTimeMillis();
         BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         // For debugging, write each captured image out to a file:
 //        try {
@@ -126,6 +127,10 @@ public class Model {
                 appendLine("\t\tDid not find join button");
             }
         }
+        
+        long stopTime = System.currentTimeMillis();
+        double elapsedTime = ((double) stopTime-startTime) / 1000.0;
+        appendLine("\tElapsed time: " + elapsedTime + "s");
         counter++;
     }
     
