@@ -28,8 +28,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
 
@@ -92,6 +97,13 @@ public class Model {
     private void monitor() {
         appendLine("Checking...");
         BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        // For debugging, write each captured image out to a file:
+//        try {
+//            ImageIO.write(screenshot, "png", new File("screenshot-" + counter + ".png"));
+//        } catch (IOException ex) {
+//            appendLine("IOException thrown while trying to write screenshot-" + counter + ".png:");
+//            appendLine(ex.toString());
+//        }
         appendLine("\tGot screenshot");
         
         appendLine("\tLooking for join button...");
