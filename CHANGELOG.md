@@ -1,5 +1,11 @@
-reline changelog
+Reline Changelog
 ================
+
+Version 0.2.0 (2014-05-16)
+--------------------------
+- Fixes #2.
+- Adds additional console output.
+- Adds version number to title bar.
 
 Version 0.1.0 (2014-05-16)
 --------------------------
