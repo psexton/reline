@@ -37,14 +37,24 @@ public final class Params {
     private final int restartY;
     private final int restartWidth;
     private final int restartHeight;
+    private final int joinX;
+    private final int joinY;
+    private final int joinWidth;
+    private final int joinHeight;
     
-    public Params(int intervalInSeconds, boolean writeImagesToDisk, int restartX, int restartY, int restartWidth, int restartHeight) {
+    public Params(int intervalInSeconds, boolean writeImagesToDisk, 
+            int restartX, int restartY, int restartWidth, int restartHeight,
+            int joinX, int joinY, int joinWidth, int joinHeight) {
         this.intervalInSeconds = intervalInSeconds;
         this.writeImagesToDisk = writeImagesToDisk;
         this.restartX = restartX;
         this.restartY = restartY;
         this.restartWidth = restartWidth;
         this.restartHeight = restartHeight;
+        this.joinX = joinX;
+        this.joinY = joinY;
+        this.joinWidth = joinWidth;
+        this.joinHeight = joinHeight;
     }
 
     /**
@@ -101,6 +111,42 @@ public final class Params {
         return restartHeight;
     }
     
+    /**
+     * Get the value of joinX
+     * 
+     * @return the value of joinX
+     */
+    public int getJoinX() {
+        return joinX;
+    }
+    
+    /**
+     * Get the value of joinY
+     * 
+     * @return the value of joinY
+     */
+    public int getJoinY() {
+        return joinY;
+    }
+    
+    /**
+     * Get the value of joinWidth
+     * 
+     * @return the value of joinWidth
+     */
+    public int getJoinWidth() {
+        return joinWidth;
+    }
+    
+    /**
+     * Get the value of joinHeight
+     * 
+     * @return the value of joinHeight
+     */
+    public int getJoinHeight() {
+        return joinHeight;
+    }
+    
     public void writeToPreferences() {
         Preferences prefs = Preferences.userNodeForPackage(Params.class);
         prefs.putInt("intervalInSeconds", intervalInSeconds);
@@ -109,6 +155,10 @@ public final class Params {
         prefs.putInt("restartY", restartY);
         prefs.putInt("restartWidth", restartWidth);
         prefs.putInt("restartHeight", restartHeight);
+        prefs.putInt("joinX", joinX);
+        prefs.putInt("joinY", joinY);
+        prefs.putInt("joinWidth", joinWidth);
+        prefs.putInt("joinHeight", joinHeight);
     }
     
     public static Params readFromPreferences() {
@@ -119,7 +169,11 @@ public final class Params {
                 prefs.getInt("restartX", DEFAULT_INTEGER),
                 prefs.getInt("restartY", DEFAULT_INTEGER),
                 prefs.getInt("restartWidth", DEFAULT_INTEGER),
-                prefs.getInt("restartHeight", DEFAULT_INTEGER));
+                prefs.getInt("restartHeight", DEFAULT_INTEGER),
+                prefs.getInt("joinX", DEFAULT_INTEGER),
+                prefs.getInt("joinY", DEFAULT_INTEGER),
+                prefs.getInt("joinWidth", DEFAULT_INTEGER),
+                prefs.getInt("joinHeight", DEFAULT_INTEGER));
     }
 
 }
