@@ -27,15 +27,24 @@ import java.util.prefs.Preferences;
  * @author PSexton
  */
 public final class Params {
-    private static final int DEFAULT_INTERVAL_IN_SECONDS = -1;
-    private static final boolean DEFAULT_WRITE_IMAGES_TO_DISK = false;
+    private static final int DEFAULT_INTEGER = -1;
+    private static final boolean DEFAULT_BOOLEAN = false;
+    
     
     private final int intervalInSeconds;
     private final boolean writeImagesToDisk;
+    private final int restartX;
+    private final int restartY;
+    private final int restartWidth;
+    private final int restartHeight;
     
-    public Params(int intervalInSeconds, boolean writeImagesToDisk) {
+    public Params(int intervalInSeconds, boolean writeImagesToDisk, int restartX, int restartY, int restartWidth, int restartHeight) {
         this.intervalInSeconds = intervalInSeconds;
         this.writeImagesToDisk = writeImagesToDisk;
+        this.restartX = restartX;
+        this.restartY = restartY;
+        this.restartWidth = restartWidth;
+        this.restartHeight = restartHeight;
     }
 
     /**
@@ -56,17 +65,61 @@ public final class Params {
         return intervalInSeconds;
     }
     
+    /**
+     * Get the value of restartX
+     * 
+     * @return the value of restartX
+     */
+    public int getRestartX() {
+        return restartX;
+    }
+    
+    /**
+     * Get the value of restartY
+     * 
+     * @return the value of restartY
+     */
+    public int getRestartY() {
+        return restartY;
+    }
+    
+    /**
+     * Get the value of restartWidth
+     * 
+     * @return the value of restartWidth
+     */
+    public int getRestartWidth() {
+        return restartWidth;
+    }
+    
+    /**
+     * Get the value of restartHeight
+     * 
+     * @return the value of restartHeight
+     */
+    public int getRestartHeight() {
+        return restartHeight;
+    }
+    
     public void writeToPreferences() {
         Preferences prefs = Preferences.userNodeForPackage(Params.class);
         prefs.putInt("intervalInSeconds", intervalInSeconds);
         prefs.putBoolean("writeImagesToDisk", writeImagesToDisk);
+        prefs.putInt("restartX", restartX);
+        prefs.putInt("restartY", restartY);
+        prefs.putInt("restartWidth", restartWidth);
+        prefs.putInt("restartHeight", restartHeight);
     }
     
     public static Params readFromPreferences() {
         Preferences prefs = Preferences.userNodeForPackage(Params.class);
         return new Params(
-                prefs.getInt("intervalInSeconds", DEFAULT_INTERVAL_IN_SECONDS),
-                prefs.getBoolean("writeImagesToDisk", DEFAULT_WRITE_IMAGES_TO_DISK));
+                prefs.getInt("intervalInSeconds", DEFAULT_INTEGER),
+                prefs.getBoolean("writeImagesToDisk", DEFAULT_BOOLEAN),
+                prefs.getInt("restartX", DEFAULT_INTEGER),
+                prefs.getInt("restartY", DEFAULT_INTEGER),
+                prefs.getInt("restartWidth", DEFAULT_INTEGER),
+                prefs.getInt("restartHeight", DEFAULT_INTEGER));
     }
 
 }

@@ -84,6 +84,7 @@ public class Model {
         this.params = params;
         this.console = console;
         console.setText("");
+        counter = 0; // restart counter
         appendLine("Starting monitoring at " + params.getIntervalInSeconds() + "s intervals");
         timer = new Timer(params.getIntervalInSeconds() * 1000, new ActionListener() {
             @Override
@@ -185,16 +186,10 @@ public class Model {
         @Override
         protected Point doInBackground() throws Exception {
             publish("\tLooking for restart button...");
-            // To save time, divide the screen image into a 4x4 grid, with square
-            // (0,0) in the top left, and square (3,0) in the top right.
-            // Only look for restart button in squares (1,0) and (2,0).
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            final int gridSquareWidth = screenSize.width / 4;
-            final int gridSquareHeight = screenSize.height / 4;
-            final int croppedStartX = gridSquareWidth * 1;
-            final int croppedStartY = gridSquareHeight * 0;
-            final int croppedWidth = gridSquareWidth * 2;
-            final int croppedHeight = gridSquareHeight * 1;
+            final int croppedStartX = params.getRestartX();
+            final int croppedStartY = params.getRestartY();
+            final int croppedWidth = params.getRestartWidth();
+            final int croppedHeight = params.getRestartHeight();
             BufferedImage croppedScreen = robot.createScreenCapture(new Rectangle(croppedStartX, croppedStartY, croppedWidth, croppedHeight));
             publish("\t\tGot cropped screenshot");
             if(params.isWriteImagesToDisk()) {

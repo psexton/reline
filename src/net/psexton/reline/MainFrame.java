@@ -39,6 +39,10 @@ public class MainFrame extends javax.swing.JFrame {
         if(params.getIntervalInSeconds() >= 0) {
             interval.getModel().setValue(params.getIntervalInSeconds());
             saveImages.setSelected(params.isWriteImagesToDisk());
+            restartX.getModel().setValue(params.getRestartX());
+            restartY.getModel().setValue(params.getRestartY());
+            restartWidth.getModel().setValue(params.getRestartWidth());
+            restartHeight.getModel().setValue(params.getRestartHeight());
         }
     }
 
@@ -55,6 +59,15 @@ public class MainFrame extends javax.swing.JFrame {
         interval = new javax.swing.JSpinner();
         saveImages = new javax.swing.JCheckBox();
         runStop = new javax.swing.JToggleButton();
+        restartLabel = new javax.swing.JLabel();
+        restartLabelX = new javax.swing.JLabel();
+        restartX = new javax.swing.JSpinner();
+        restartLabelY = new javax.swing.JLabel();
+        restartY = new javax.swing.JSpinner();
+        restartLabelW = new javax.swing.JLabel();
+        restartWidth = new javax.swing.JSpinner();
+        restartLabelH = new javax.swing.JLabel();
+        restartHeight = new javax.swing.JSpinner();
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
 
@@ -73,6 +86,24 @@ public class MainFrame extends javax.swing.JFrame {
                 runStopActionPerformed(evt);
             }
         });
+
+        restartLabel.setText("Restart button:");
+
+        restartLabelX.setText("x");
+
+        restartX.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(0), null, Integer.valueOf(1)));
+
+        restartLabelY.setText("y");
+
+        restartY.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(0), null, Integer.valueOf(1)));
+
+        restartLabelW.setText("w");
+
+        restartWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(350), Integer.valueOf(1), null, Integer.valueOf(1)));
+
+        restartLabelH.setText("h");
+
+        restartHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(200), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         jScrollPane1.setEnabled(false);
 
@@ -97,7 +128,26 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(saveImages)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
-                        .addComponent(runStop, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(runStop, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(restartLabel)
+                        .addGap(18, 18, 18)
+                        .addComponent(restartLabelX)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartX, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartLabelY)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartY, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartLabelW)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartLabelH)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(restartHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -109,8 +159,22 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(intervalLabel)
                     .addComponent(runStop)
                     .addComponent(saveImages))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(restartLabel)
+                    .addComponent(restartLabelX)
+                    .addComponent(restartX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(restartLabelY)
+                        .addComponent(restartY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(restartLabelW)
+                            .addComponent(restartWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(restartLabelH)
+                                .addComponent(restartHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -131,7 +195,11 @@ public class MainFrame extends javax.swing.JFrame {
             // start
             Params params = new Params(
                     (Integer) interval.getModel().getValue(),
-                    saveImages.isSelected());
+                    saveImages.isSelected(),
+                    (Integer) restartX.getModel().getValue(),
+                    (Integer) restartY.getModel().getValue(),
+                    (Integer) restartWidth.getModel().getValue(),
+                    (Integer) restartHeight.getModel().getValue());
             params.writeToPreferences();
             model.startMonitor(params, console);
             runStop.setText("Stop");
@@ -148,6 +216,15 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSpinner interval;
     private javax.swing.JLabel intervalLabel;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSpinner restartHeight;
+    private javax.swing.JLabel restartLabel;
+    private javax.swing.JLabel restartLabelH;
+    private javax.swing.JLabel restartLabelW;
+    private javax.swing.JLabel restartLabelX;
+    private javax.swing.JLabel restartLabelY;
+    private javax.swing.JSpinner restartWidth;
+    private javax.swing.JSpinner restartX;
+    private javax.swing.JSpinner restartY;
     private javax.swing.JToggleButton runStop;
     private javax.swing.JCheckBox saveImages;
     // End of variables declaration//GEN-END:variables
