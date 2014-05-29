@@ -20,6 +20,7 @@
 package net.psexton.reline;
 
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -28,14 +29,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
+import java.util.List;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 /**
@@ -52,7 +50,12 @@ public class Model {
     private final DateFormat dateFormat;
     private Robot robot;
     private long counter;
+    private long startTime;
+    private SwingWorker currentWorker;
     
+    /**
+     *
+     */
     public Model() {
         console = null;
         isRunning = false;
@@ -60,8 +63,14 @@ public class Model {
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
         robot = null;
         counter = 0;
+        currentWorker = null;
     }
     
+    /**
+     *
+     * @param intervalInSeconds
+     * @param console
+     */
     public void startMonitor(int intervalInSeconds, JTextArea console) {
         if(isRunning) {
             throw new IllegalStateException("Already monitoring");
@@ -85,97 +94,46 @@ public class Model {
         }
     }
     
+    /**
+     *
+     */
     public void stopMonitor() {
         if(!isRunning) {
             throw new IllegalStateException("Not monitoring");
         }
+        if(currentWorker != null)
+            currentWorker.cancel(true);
         timer.stop();
         isRunning = false;
         appendLine("Stopping monitoring");
     }
     
     private void monitor() {
-        appendLine("Checking... (#" + counter + ")");
-        long startTime = System.currentTimeMillis();
-        BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        iterationStart();
+
         // For debugging, write each captured image out to a file:
+//        BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
 //        try {
 //            ImageIO.write(screenshot, "png", new File("screenshot-" + counter + ".png"));
 //        } catch (IOException ex) {
 //            appendLine("IOException thrown while trying to write screenshot-" + counter + ".png:");
 //            appendLine(ex.toString());
 //        }
-        appendLine("\tGot screenshot");
         
-        appendLine("\tLooking for restart button...");
-        Point restartClickPoint = lookForRestartButton(screenshot);
-        if(restartClickPoint != null) {
-            appendLine("\t\tFound restart button at (" + restartClickPoint.x + ", " + restartClickPoint.y + ")");
-            moveAndClickMouse(restartClickPoint);
-            appendLine("\t\tCursor moved and clicked");
-        }
-        else {
-            appendLine("\t\tDid not find restart button");
-            appendLine("\tLooking for join button...");
-            Point joinClickPoint = lookForJoinButton(screenshot);
-            if(joinClickPoint != null) {
-                appendLine("\t\tFound join button at (" + joinClickPoint.x + ", " + joinClickPoint.y + ")");
-                moveAndClickMouse(joinClickPoint);
-                appendLine("\t\tCursor moved and clicked");
-            }
-            else {
-                appendLine("\t\tDid not find join button");
-            }
-        }
-        
+        currentWorker = new RestartButtonWorker();
+        currentWorker.execute(); // This will chain a call to JoinButtonWorker if needed
+    }
+    
+    private void iterationStart() {
+        appendLine("Checking... (#" + counter + ")");
+        startTime = System.currentTimeMillis();
+    }
+    
+    private void iterationEnd() {
         long stopTime = System.currentTimeMillis();
         double elapsedTime = ((double) stopTime-startTime) / 1000.0;
         appendLine("\tElapsed time: " + elapsedTime + "s");
         counter++;
-    }
-    
-    private Point lookForJoinButton(BufferedImage screenshot) {
-        // To save time, divide the screen image into a 4x4 grid, with square
-        // (0,0) in the top left, and square (3,0) in the top right.
-        // Only look for join button in squares (2,1) and (2,2).
-        final int gridSquareWidth = screenshot.getWidth() / 4;
-        final int gridSquareHeight = screenshot.getHeight() / 4;
-        final int croppedStartX = gridSquareWidth * 2;
-        final int croppedStartY = gridSquareHeight * 1;
-        final int croppedWidth = gridSquareWidth * 1;
-        final int croppedHeight = gridSquareHeight * 2;
-        BufferedImage croppedScreen = screenshot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
-        PatchFinder pf = new PatchFinder();
-        pf.setPatchSize(JOIN_PATCH_SIZE);
-        Point clickPoint = pf.findInImage(croppedScreen);
-        if(clickPoint != null) {
-            // Need to convert croppedScreen's coords to screen's coords
-            clickPoint.x = clickPoint.x + croppedStartX;
-            clickPoint.y = clickPoint.y + croppedStartY;
-        }
-        return clickPoint;
-    }
-    
-    private Point lookForRestartButton(BufferedImage screenshot) {
-        // To save time, divide the screen image into a 4x4 grid, with square
-        // (0,0) in the top left, and square (3,0) in the top right.
-        // Only look for restart button in squares (1,0) and (2,0).
-        final int gridSquareWidth = screenshot.getWidth() / 4;
-        final int gridSquareHeight = screenshot.getHeight() / 4;
-        final int croppedStartX = gridSquareWidth * 1;
-        final int croppedStartY = gridSquareHeight * 0;
-        final int croppedWidth = gridSquareWidth * 2;
-        final int croppedHeight = gridSquareHeight * 1;
-        BufferedImage croppedScreen = screenshot.getSubimage(croppedStartX, croppedStartY, croppedWidth, croppedHeight);
-        PatchFinder pf = new PatchFinder();
-        pf.setPatchSize(RESTART_PATCH_SIZE);
-        Point clickPoint = pf.findInImage(croppedScreen);
-        if(clickPoint != null) {
-            // Need to convert croppedScreen's coords to screen's coords
-            clickPoint.x = clickPoint.x + croppedStartX;
-            clickPoint.y = clickPoint.y + croppedStartY;
-        }
-        return clickPoint;
     }
     
     private void moveAndClickMouse(Point point) {
@@ -195,4 +153,136 @@ public class Model {
         console.append(dateAndTimePrefix + content + "\n");
     }
     
+    //
+    // SwingWorker classes for calling PatchFinder class on a background thread
+    //
+    
+    class RestartButtonWorker extends SwingWorker<Point, String> {
+        private volatile Point clickPoint; // volatile to share between threads
+        
+        // Runs on caller thread (probably EDT)
+        RestartButtonWorker() {
+            clickPoint = null;
+        }
+        
+        // Runs on worker thread
+        @Override
+        protected Point doInBackground() throws Exception {
+            publish("\tLooking for restart button...");
+            // To save time, divide the screen image into a 4x4 grid, with square
+            // (0,0) in the top left, and square (3,0) in the top right.
+            // Only look for restart button in squares (1,0) and (2,0).
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            final int gridSquareWidth = screenSize.width / 4;
+            final int gridSquareHeight = screenSize.height / 4;
+            final int croppedStartX = gridSquareWidth * 1;
+            final int croppedStartY = gridSquareHeight * 0;
+            final int croppedWidth = gridSquareWidth * 2;
+            final int croppedHeight = gridSquareHeight * 1;
+            BufferedImage croppedScreen = robot.createScreenCapture(new Rectangle(croppedStartX, croppedStartY, croppedWidth, croppedHeight));
+            publish("\t\tGot cropped screenshot...");
+            PatchFinder pf = new PatchFinder();
+            pf.setPatchSize(RESTART_PATCH_SIZE);
+            clickPoint = pf.findInImage(croppedScreen);
+            if(clickPoint != null) {
+                // Need to convert croppedScreen's coords to screen's coords
+                clickPoint.x = clickPoint.x + croppedStartX;
+                clickPoint.y = clickPoint.y + croppedStartY;
+            }
+            return clickPoint;
+        }
+        
+        // Runs on EDT
+        @Override
+        protected void process(List<String> chunks) {
+            for(String chunk : chunks) {
+                appendLine(chunk);
+            }
+        }
+        
+        // Runs on EDT
+        @Override
+        protected void done() {
+            if(isCancelled()) {
+                appendLine("\t\tTask cancelled");
+                iterationEnd();
+            }
+            else {
+                if(clickPoint != null) {
+                    appendLine("\t\tFound restart button at (" + clickPoint.x + ", " + clickPoint.y + ")");
+                    moveAndClickMouse(clickPoint);
+                    appendLine("\t\tCursor moved and clicked");
+                    iterationEnd();
+                }
+                else {
+                    appendLine("\t\tDid not find restart button");
+                    currentWorker = new JoinButtonWorker();
+                    currentWorker.execute();
+                }
+            }
+        }
+    }
+    
+    class JoinButtonWorker extends SwingWorker<Point, String> {
+        private volatile Point clickPoint; // volatile to share between threads
+        
+        // Runs on caller thread (probably EDT)
+       JoinButtonWorker() {
+            clickPoint = null;
+        }
+        
+        // Runs on worker thread
+        @Override
+        protected Point doInBackground() throws Exception {
+            publish("\tLooking for join button...");
+            // To save time, divide the screen image into a 4x4 grid, with square
+            // (0,0) in the top left, and square (3,0) in the top right.
+            // Only look for join button in squares (2,1) and (2,2).
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            final int gridSquareWidth = screenSize.width / 4;
+            final int gridSquareHeight = screenSize.height / 4;
+            final int croppedStartX = gridSquareWidth * 2;
+            final int croppedStartY = gridSquareHeight * 1;
+            final int croppedWidth = gridSquareWidth * 1;
+            final int croppedHeight = gridSquareHeight * 2;
+            BufferedImage croppedScreen = robot.createScreenCapture(new Rectangle(croppedStartX, croppedStartY, croppedWidth, croppedHeight));
+            publish("\t\tGot cropped screenshot...");
+            PatchFinder pf = new PatchFinder();
+            pf.setPatchSize(JOIN_PATCH_SIZE);
+            clickPoint = pf.findInImage(croppedScreen);
+            if(clickPoint != null) {
+                // Need to convert croppedScreen's coords to screen's coords
+                clickPoint.x = clickPoint.x + croppedStartX;
+                clickPoint.y = clickPoint.y + croppedStartY;
+            }
+            return clickPoint;
+        }
+        
+        // Runs on EDT
+        @Override
+        protected void process(List<String> chunks) {
+            for(String chunk : chunks) {
+                appendLine(chunk);
+            }
+        }
+        
+        // Runs on EDT
+        @Override
+        protected void done() {
+            if(isCancelled()) {
+                appendLine("\t\tTask cancelled");
+            }
+            else {
+                if(clickPoint != null) {
+                    appendLine("\t\tFound join button at (" + clickPoint.x + ", " + clickPoint.y + ")");
+                    moveAndClickMouse(clickPoint);
+                    appendLine("\t\tCursor moved and clicked");
+                }
+                else {
+                    appendLine("\t\tDid not find join button");
+                }
+            }
+            iterationEnd();
+        }
+    }
 }
