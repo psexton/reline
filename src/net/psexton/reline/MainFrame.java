@@ -44,6 +44,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         intervalLabel = new javax.swing.JLabel();
         interval = new javax.swing.JSpinner();
+        saveImages = new javax.swing.JCheckBox();
         runStop = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
@@ -54,6 +55,8 @@ public class MainFrame extends javax.swing.JFrame {
         intervalLabel.setText("Interval (seconds):");
 
         interval.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(15), Integer.valueOf(1), null, Integer.valueOf(1)));
+
+        saveImages.setText("Save images to disk?");
 
         runStop.setText("Run");
         runStop.addActionListener(new java.awt.event.ActionListener() {
@@ -82,7 +85,9 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(intervalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(interval, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 249, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(saveImages)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
                         .addComponent(runStop, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -93,7 +98,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(interval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(intervalLabel)
-                    .addComponent(runStop))
+                    .addComponent(runStop)
+                    .addComponent(saveImages))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
                 .addContainerGap())
@@ -114,7 +120,10 @@ public class MainFrame extends javax.swing.JFrame {
         // Either start or stop the app
         if(isStarting) {
             // start
-            model.startMonitor((Integer) interval.getModel().getValue(), console);
+            Params params = new Params(
+                    (Integer) interval.getModel().getValue(),
+                    saveImages.isSelected());
+            model.startMonitor(params, console);
             runStop.setText("Stop");
         }
         else {
@@ -130,5 +139,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel intervalLabel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToggleButton runStop;
+    private javax.swing.JCheckBox saveImages;
     // End of variables declaration//GEN-END:variables
 }

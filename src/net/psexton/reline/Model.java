@@ -29,9 +29,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
@@ -44,6 +47,7 @@ public class Model {
     private static final int JOIN_PATCH_SIZE = 16;
     private static final int RESTART_PATCH_SIZE = 32;
     
+    private Params params;
     private JTextArea console;
     private boolean isRunning;
     private Timer timer;
@@ -57,6 +61,7 @@ public class Model {
      *
      */
     public Model() {
+        params = null;
         console = null;
         isRunning = false;
         timer = null;
@@ -68,18 +73,19 @@ public class Model {
     
     /**
      *
-     * @param intervalInSeconds
+     * @param params
      * @param console
      */
-    public void startMonitor(int intervalInSeconds, JTextArea console) {
+    public void startMonitor(Params params, JTextArea console) {
         if(isRunning) {
             throw new IllegalStateException("Already monitoring");
         }
         isRunning = true;
+        this.params = params;
         this.console = console;
         console.setText("");
-        appendLine("Starting monitoring at " + intervalInSeconds + "s intervals");
-        timer = new Timer(intervalInSeconds * 1000, new ActionListener() {
+        appendLine("Starting monitoring at " + params.getIntervalInSeconds() + "s intervals");
+        timer = new Timer(params.getIntervalInSeconds() * 1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 monitor();
@@ -110,16 +116,6 @@ public class Model {
     
     private void monitor() {
         iterationStart();
-
-        // For debugging, write each captured image out to a file:
-//        BufferedImage screenshot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-//        try {
-//            ImageIO.write(screenshot, "png", new File("screenshot-" + counter + ".png"));
-//        } catch (IOException ex) {
-//            appendLine("IOException thrown while trying to write screenshot-" + counter + ".png:");
-//            appendLine(ex.toString());
-//        }
-        
         currentWorker = new RestartButtonWorker();
         currentWorker.execute(); // This will chain a call to JoinButtonWorker if needed
     }
@@ -153,6 +149,26 @@ public class Model {
         console.append(dateAndTimePrefix + content + "\n");
     }
     
+    /**
+     * For debugging, write each captured image out to a file
+     * @param image
+     * @param name 
+     */
+    private void writeImageToDisk(BufferedImage image, String name) {
+        // Make sure subdir exists
+        File imageDir = new File("reline_images");
+        imageDir.mkdir();
+        // Construct filename
+        File imageFile = new File(imageDir, name + "-" + (counter % 10) + ".png");
+        
+        try {
+            ImageIO.write(image, "png", imageFile);
+        } catch (IOException ex) {
+            appendLine("IOException thrown while trying to write " + imageFile.getAbsolutePath());
+            appendLine(ex.toString());
+        }
+    }
+    
     //
     // SwingWorker classes for calling PatchFinder class on a background thread
     //
@@ -180,7 +196,12 @@ public class Model {
             final int croppedWidth = gridSquareWidth * 2;
             final int croppedHeight = gridSquareHeight * 1;
             BufferedImage croppedScreen = robot.createScreenCapture(new Rectangle(croppedStartX, croppedStartY, croppedWidth, croppedHeight));
-            publish("\t\tGot cropped screenshot...");
+            publish("\t\tGot cropped screenshot");
+            if(params.isWriteImagesToDisk()) {
+                writeImageToDisk(croppedScreen, "restart");
+                publish("\t\tSaved image to disk");
+            }
+            publish("\t\tMatching...");
             PatchFinder pf = new PatchFinder();
             pf.setPatchSize(RESTART_PATCH_SIZE);
             clickPoint = pf.findInImage(croppedScreen);
@@ -246,7 +267,12 @@ public class Model {
             final int croppedWidth = gridSquareWidth * 1;
             final int croppedHeight = gridSquareHeight * 2;
             BufferedImage croppedScreen = robot.createScreenCapture(new Rectangle(croppedStartX, croppedStartY, croppedWidth, croppedHeight));
-            publish("\t\tGot cropped screenshot...");
+            publish("\t\tGot cropped screenshot");
+            if(params.isWriteImagesToDisk()) {
+                writeImageToDisk(croppedScreen, "join");
+                publish("\t\tSaved image to disk");
+            }
+            publish("\t\tMatching...");
             PatchFinder pf = new PatchFinder();
             pf.setPatchSize(JOIN_PATCH_SIZE);
             clickPoint = pf.findInImage(croppedScreen);
