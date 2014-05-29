@@ -85,7 +85,7 @@ public class MainFrame extends javax.swing.JFrame {
         console = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Reline 0.2.1");
+        setTitle("Reline 0.3.0");
 
         intervalLabel.setText("Interval (seconds):");
 
@@ -104,37 +104,37 @@ public class MainFrame extends javax.swing.JFrame {
 
         restartLabelX.setText("x");
 
-        restartX.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(0), null, Integer.valueOf(1)));
+        restartX.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(300), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         restartLabelY.setText("y");
 
-        restartY.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(0), null, Integer.valueOf(1)));
+        restartY.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(200), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         restartLabelW.setText("w");
 
-        restartWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(350), Integer.valueOf(1), null, Integer.valueOf(1)));
+        restartWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(325), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         restartLabelH.setText("h");
 
-        restartHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(200), Integer.valueOf(1), null, Integer.valueOf(1)));
+        restartHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(125), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         joinLabel.setText("Join button:");
 
         joinLabelX.setText("x");
 
-        joinX.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(800), Integer.valueOf(0), null, Integer.valueOf(1)));
+        joinX.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(750), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         joinLabelY.setText("y");
 
-        joinY.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(600), Integer.valueOf(0), null, Integer.valueOf(1)));
+        joinY.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(450), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         joinLabelW.setText("w");
 
-        joinWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(250), Integer.valueOf(1), null, Integer.valueOf(1)));
+        joinWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(225), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         joinLabelH.setText("h");
 
-        joinHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(150), Integer.valueOf(1), null, Integer.valueOf(1)));
+        joinHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(125), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         jScrollPane1.setEnabled(false);
 
