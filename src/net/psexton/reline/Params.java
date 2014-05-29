@@ -19,11 +19,16 @@
 
 package net.psexton.reline;
 
+import java.util.prefs.Preferences;
+
 /**
  *
  * @author PSexton
  */
 public class Params {
+    private static final int DEFAULT_INTERVAL_IN_SECONDS = -1;
+    private static final boolean DEFAULT_WRITE_IMAGES_TO_DISK = false;
+    
     private final int intervalInSeconds;
     private final boolean writeImagesToDisk;
     
@@ -50,6 +55,17 @@ public class Params {
         return intervalInSeconds;
     }
     
+    public void writeToPreferences() {
+        Preferences prefs = Preferences.userNodeForPackage(Params.class);
+        prefs.putInt("intervalInSeconds", intervalInSeconds);
+        prefs.putBoolean("writeImagesToDisk", writeImagesToDisk);
+    }
     
+    public static Params readFromPreferences() {
+        Preferences prefs = Preferences.userNodeForPackage(Params.class);
+        return new Params(
+                prefs.getInt("intervalInSeconds", DEFAULT_INTERVAL_IN_SECONDS),
+                prefs.getBoolean("writeImagesToDisk", DEFAULT_WRITE_IMAGES_TO_DISK));
+    }
 
 }

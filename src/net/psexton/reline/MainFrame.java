@@ -31,6 +31,15 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        
+        // If we've written params to disk previously, reload them
+        // Params puts default value for intervalInSeconds to invalid value of -1,
+        // so use that to determine if they're previously stored or defaults.
+        Params params = Params.readFromPreferences();
+        if(params.getIntervalInSeconds() >= 0) {
+            interval.getModel().setValue(params.getIntervalInSeconds());
+            saveImages.setSelected(params.isWriteImagesToDisk());
+        }
     }
 
     /**
@@ -123,6 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
             Params params = new Params(
                     (Integer) interval.getModel().getValue(),
                     saveImages.isSelected());
+            params.writeToPreferences();
             model.startMonitor(params, console);
             runStop.setText("Stop");
         }
