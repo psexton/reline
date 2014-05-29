@@ -22,10 +22,11 @@ package net.psexton.reline;
 import java.util.prefs.Preferences;
 
 /**
- *
+ * Holder for parameters we want to pass from GUI to Model.
+ * Threadsafe because it's an immutable class.
  * @author PSexton
  */
-public class Params {
+public final class Params {
     private static final int DEFAULT_INTERVAL_IN_SECONDS = -1;
     private static final boolean DEFAULT_WRITE_IMAGES_TO_DISK = false;
     
